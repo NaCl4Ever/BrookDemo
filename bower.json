@@ -1,0 +1,21 @@
+{
+  "name": "cakephp",
+  "homepage": "https://github.com/cakephp/cakephp",
+  "authors": [
+    "Jordan Pectyo <vagrant@www.modern.test>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "^3.3.7"
+  }
+}
