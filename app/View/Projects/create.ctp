@@ -8,18 +8,27 @@
 </head>
 
 <body>
-        <h1>Create a Project</h1>
-        <?php foreach($categories as $category) 
-            $options[] = array(
-                'value' => $category['Category']['id'],
-                'name' => $category['Category']['description']
-
-            );
-            echo $this->Form->input('Category', array('options'=> $options));
-        ?>
+        <div class="page-header">
+            <h1>Create a Project</h1>
+        </div>
         
-        <button class = "btn" id = "test" type="button">Click for fun</button>
         
+        <div class="col-xs-12 col-md-6">
+            <form>
+                
+            
+            <input class="form-control" id = "project-name" type="text" >
+            <input  class="form-control" id = "project-category" type="search" list="category" placeholder="Pick a category">
+            <datalist id = "category">
+                <?php foreach($categories as $category) : ?> 
+                    <option value=" <?php echo $category['Category']['description'] ?>"></option>
+                <?php endforeach; ?>
+            </datalist>
+            <input type="file" id="project-files" multiple accept="image/x-png,image/gif,image/jpeg">
+            <textarea name="editor1" id="editor1" cols="30" rows="10"></textarea>  
+            <button class = "btn btn-default" id = "test" type="button">Create new project</button>
+            </form>
+        </div>
 <script>
     $('#test').click(function(){
 		 $.ajax({
@@ -32,7 +41,14 @@
 			 }
 		 });
 		  
-	});
+    });
+    $('#project-files').on('change', function(){
+        if( $('#project-files')[0].files.length>4)
+        {
+             alert('You may only upload up to 4 images.');
+        }
+    });
+    CKEDITOR.replace('editor1');
 </script>
 </body>
 </html>
