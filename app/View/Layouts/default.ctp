@@ -27,12 +27,10 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 	<?php
 		echo $this->Html->meta('icon');
 
-		echo $this->Html->css(array('bootstrap.min.css', 'main.css'));
-		echo $this->Html->script(array('jquery.min.js'));
+		echo $this->Html->css(array('bootstrap.min', 'main'));
+		echo $this->Html->script(array('jquery.min'));
 		
-		echo $this->fetch('meta');
-		echo $this->fetch('css');
-		echo $this->fetch('script');
+		
 ?>
 <script src="https://cdn.ckeditor.com/4.7.1/standard/ckeditor.js"></script>
 </head>

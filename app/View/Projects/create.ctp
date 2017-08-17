@@ -26,26 +26,53 @@
             </datalist>
             <input type="file" id="project-files" multiple accept="image/x-png,image/gif,image/jpeg">
             <textarea name="editor1" id="editor1" cols="30" rows="10"></textarea>  
-            <button class = "btn btn-default" id = "test" type="button">Create new project</button>
+            <button class = "btn btn-default" id = "submit" type="button">Create new project</button>
             </form>
+            
         </div>
 <script>
-    $('#test').click(function(){
-		 $.ajax({
-			 url: '/projects/show',
-			 method: "POST",
-			 json: 'application/json',
-			 data: { name: "John", category_id: 1 ,scope: "Boston" },
-			 success: function (response) {
-				 console.log(response);
-			 }
-		 });
-		  
+    var files;
+    $('#submit').click(function(){
+        
+        var fileForm = new FormData();
+        $.each(files, function(key,value){
+            fileForm.append(key,value);
+        });
+        $.ajax({
+                    url: '/projects/attachimages',
+                    method: "POST",
+                    processData: false,
+                    data: fileForm,
+                    success: function(response){
+
+                    }
+                })
+		//  $.ajax({
+		// 	 url: '/projects/add',
+		// 	 method: "POST",
+		// 	 json: 'application/json',
+		// 	 data: { 
+        //          Project : {
+        //             name: $('#project-name').val(),
+        //             category_id: $('#project-category').val(),
+        //             scope: CKEDITOR.instances.editor1.getData()  
+        //          }
+        //          },
+		// 	 success: function (response) {
+                
+		// 	 }
+		//  });
+        
     });
-    $('#project-files').on('change', function(){
+    $('#project-files').on('change', function(event){
         if( $('#project-files')[0].files.length>4)
         {
              alert('You may only upload up to 4 images.');
+             
+
+        }
+        else{
+            files = event.target.files
         }
     });
     CKEDITOR.replace('editor1');
