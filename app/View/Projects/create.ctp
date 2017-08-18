@@ -38,30 +38,35 @@
         $.each(files, function(key,value){
             fileForm.append(key,value);
         });
-        $.ajax({
-                    url: '/projects/attachimages',
+        
+		 $.ajax({
+			 url: '/projects/add',
+			 method: "POST",
+			 json: 'application/json',
+			 data: { 
+                 Project : {
+                    name: $('#project-name').val(),
+                    category_id: $('#project-category').val(),
+                    scope: CKEDITOR.instances.editor1.getData()  
+                 }
+                 },
+			 success: function (response) {
+                 console.dir(response);
+                 var project_id = JSON.parse(response).id;
+                 console.log(project_id);
+                $.ajax({
+                    url: '/projects/attachimages?project_id=' + project_id,
                     method: "POST",
                     processData: false,
+                    contentType: false,
+                    cache: false,
                     data: fileForm,
                     success: function(response){
-
+                        console.dir(response);
                     }
-                })
-		//  $.ajax({
-		// 	 url: '/projects/add',
-		// 	 method: "POST",
-		// 	 json: 'application/json',
-		// 	 data: { 
-        //          Project : {
-        //             name: $('#project-name').val(),
-        //             category_id: $('#project-category').val(),
-        //             scope: CKEDITOR.instances.editor1.getData()  
-        //          }
-        //          },
-		// 	 success: function (response) {
-                
-		// 	 }
-		//  });
+                });        
+			 }
+		 });
         
     });
     $('#project-files').on('change', function(event){

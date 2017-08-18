@@ -1,6 +1,7 @@
+<div id="breadcrumb">
 <?php
-foreach ($users as &$user) {
-    echo $user;
-}
-echo json_encode(compact('users'));
+if(isset($category)){ $this->Html->addCrumb($category, '/projects/show/'.$category);}
+if(isset($projectId)) {$this->Html->addCrumb($projectName, '/projects/show/'.$category.'/'.$projectId);}
+echo $this->Html->getCrumbs(' > ', 'Project Portfolio');
 ?>
+</div>
