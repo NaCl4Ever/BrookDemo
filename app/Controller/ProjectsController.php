@@ -7,7 +7,11 @@ class ProjectsController extends AppController {
     public $components = array('RequestHandler');
     
     public function index() {
-        $this->set('projects', $this->Project->find('all'));
+        // $this->set('projects', $this->Project->find('all'));
+        $this->loadModel('Category');
+        $categories = $this->Category->query("Select cate.id, cate.description, count(proj.id) as count from categories as cate LEFT OUTER JOIN projects as proj on  proj.category_id = cate.id GROUP BY cate.id, cate.description");
+        $this->set('categories', $categories);
+
     }
     public function create() {
         $this->loadModel('Category');
@@ -57,7 +61,8 @@ class ProjectsController extends AppController {
                 $this->ProjectImage->save(array(
                     'name' => $name,
                     'path' => WWW_ROOT . "media/"."$project_id/$name",
-                    'display_picture' => 0
+                    'display_picture' => 0,
+                    'project_id' => $project_id
                 ));
                 array_push( $status, "$name written successfully.");
             }
@@ -78,15 +83,45 @@ class ProjectsController extends AppController {
         $this->set('data', $data);
         $this->render('test');
     }
-    public function show($category = null, $projectId = null) {
-        $this->log($category);
-        $this->log($projectId);
-        $projectName =  $projectId !== null ? $this->Project->find('first', array(
+    public function show($categoryId = null, $projectId = null) {
+        $this->loadModel('Category');
+        $this->loadModel('ProjectImage');
+        //Load category
+        $category = $this->Category->find('first', array(
+            'conditions' => array('Category.id' => $categoryId)
+        ))['Category']['description'];
+        //Load project name if the project id is set
+        $projectName =  !empty($this->Project->find('first', array(
+            'conditions' => array('Project.id' => $projectId)
+        ))) ? $this->Project->find('first', array(
             'conditions' => array('Project.id' => $projectId)
         ))['Project']['name'] : null;
-        $this->set(compact('category', 'projectId', 'projectName'));
-        
+        //Load information we have so far into the page
+        $this->set(compact('category', 'projectId', 'projectName', 'categoryId'));
+
         $this->autorender = null ;
+        if($projectId === null){
+            $projects  = $this->Project->find('all', array(
+                'conditions' => array('Project.category_id' => $categoryId)
+            ));
+            $this->set('projects', $projects);
+            $this->render('category');
+        }
+
+        else{
+            $images = $this->ProjectImage->find('all', array(
+                'conditions' => array('ProjectImage.project_id' => $projectId)
+            ));
+            $selectedImage = $this->ProjectImage->find('first')['ProjectImage'];
+            $this->log($images);
+            $project  = $this->Project->find('first', array(
+                'conditions' => array('Project.id' => $projectId)
+            ));
+            
+            $this->set(compact('images', 'project', 'selectedImage'));
+            $this->render('project');
+        }
     }
+   
 }
 ?>

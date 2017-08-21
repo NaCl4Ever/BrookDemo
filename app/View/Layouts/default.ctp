@@ -27,7 +27,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 	<?php
 		echo $this->Html->meta('icon');
 
-		echo $this->Html->css(array('bootstrap.min', 'main'));
+		echo $this->Html->css(array('bootstrap.min', 'main.css'));
 		echo $this->Html->script(array('jquery.min', 'bootstrap.min'));
 		
 		
@@ -63,7 +63,13 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 	</div><!-- /.container-fluid -->
 	</nav>
 	<div id="container">
-	
+		<?php
+		echo $this->Html->getCrumbs(' > ', array(
+			'text' => 'Project Portfolio',
+			'url' => array('controller' => 'projects', 'action' => 'index', 'project'),
+			'escape' => false
+		));
+		?>
 		<div id="content">
 			<?php echo $this->Flash->render(); ?>
 			<?php echo $this->fetch('content'); ?>
