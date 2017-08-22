@@ -4,20 +4,39 @@
 #project-image-display {
   padding: 3em;
 }
-a.selected {
+a.selected > img {
   opacity: .5;
   cursor: pointer;
-}
-h1 {
-  color: red !important;
 }
 .thumbnail {
   float: left;
   background: blue;
   margin: 0 20px 20px 0;
-  width: 14em;
+  width: 10em;
 }
 .thumbnail > img:hover {
   opacity: .5;
   cursor: pointer;
+}
+@media print {
+  .navbar .breadcrumbs .similar-projects #print-button {
+    display: none;
+  }
+}
+.related-section > img {
+  width: 20em;
+}
+.related-section .cover {
+  display: none;
+}
+.related-section:hover .cover {
+  display: block !important;
+  position: absolute;
+  width: 20em;
+  background-color: rgba(0, 0, 0, 0.5);
+  top: 0;
+  z-index: 9;
+  height: 100%;
+  color: white;
+  max-height: 20em;
 }

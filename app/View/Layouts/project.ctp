@@ -63,6 +63,16 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 	</div><!-- /.container-fluid -->
 	</nav>
 	<div id="container">
+		<div class="breadcrumbs">
+		<?php
+		echo $this->Html->getCrumbs(' > ', array(
+			'text' => 'Project Portfolio',
+			'url' => array('controller' => 'projects', 'action' => 'index', 'project'),
+			'escape' => false
+		));
+		?>
+		</div>
+		
 		<div id="content">
 			<?php echo $this->Flash->render(); ?>
 			<?php echo $this->fetch('content'); ?>

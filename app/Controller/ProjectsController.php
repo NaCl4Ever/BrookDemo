@@ -7,7 +7,8 @@ class ProjectsController extends AppController {
     public $components = array('RequestHandler');
     
     public function index() {
-        // $this->set('projects', $this->Project->find('all'));
+        
+        $this->layout = 'project';
         $this->loadModel('Category');
         $categories = $this->Category->query("Select cate.id, cate.description, count(proj.id) as count from categories as cate LEFT OUTER JOIN projects as proj on  proj.category_id = cate.id GROUP BY cate.id, cate.description");
         $this->set('categories', $categories);
@@ -19,8 +20,6 @@ class ProjectsController extends AppController {
     }
     public function add() {
         $formatted = $this->request->data['Project'];
-        // $this->log($this->request->data);
-        // $this->log($this->request->data['Files']);
         $this->loadModel('Category');
         $category = $this->Category->find('first', array(
             'conditions' => array('Category.description' => trim($formatted['category_id']))
@@ -83,7 +82,22 @@ class ProjectsController extends AppController {
         $this->set('data', $data);
         $this->render('test');
     }
+    public function setdefault(){
+        $formatted = $this->request->data;
+        $this->loadModel('ProjectImage');
+        $id = $this->ProjectImage->find('first', array(
+            'conditions' => array(
+                'ProjectImage.project_id' => $formatted['projectId'],
+                'ProjectImage.name' => trim($formatted['selection'])
+                )
+            ))['ProjectImage']['id'];
+        $this->ProjectImage->id = $id;
+        $this->ProjectImage->saveField('display_picture' , 1);
+        $this->layout = null ;
+        $this->render('test');
+    }
     public function show($categoryId = null, $projectId = null) {
+        $this->layout = 'project';
         $this->loadModel('Category');
         $this->loadModel('ProjectImage');
         //Load category
@@ -112,13 +126,22 @@ class ProjectsController extends AppController {
             $images = $this->ProjectImage->find('all', array(
                 'conditions' => array('ProjectImage.project_id' => $projectId)
             ));
-            $selectedImage = $this->ProjectImage->find('first')['ProjectImage'];
-            $this->log($images);
+            $selectedImage = $this->ProjectImage->find('first', array(
+                'conditions' => array(
+                    'ProjectImage.project_id' => $projectId,
+                    'ProjectImage.display_picture' => 1
+                    )
+            ))['ProjectImage'];
             $project  = $this->Project->find('first', array(
                 'conditions' => array('Project.id' => $projectId)
             ));
-            
-            $this->set(compact('images', 'project', 'selectedImage'));
+            $relatedImages = $this->Project->query("Select * ".
+            "from projects as proj ".
+            "LEFT OUTER JOIN project_images as projImg on  proj.id = projImg.project_id ". 
+            "WHERE projImg.display_picture = 1 ".
+            "AND proj.category_id = ". $categoryId 
+            );
+            $this->set(compact('images', 'project', 'selectedImage', 'relatedImages'));
             $this->render('project');
         }
     }

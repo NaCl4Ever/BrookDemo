@@ -24,11 +24,11 @@
                     <option value=" <?php echo $category['Category']['description'] ?>"></option>
                 <?php endforeach; ?>
             </datalist>
+            <textarea name="editor1" id="editor1" cols="30" rows="10"></textarea>  
             <input type="file" id="project-files" multiple accept="image/x-png,image/gif,image/jpeg">
             <div class="preview">
 
             </div>
-            <textarea name="editor1" id="editor1" cols="30" rows="10"></textarea>  
             <button class = "btn btn-default" id = "submit" type="button">Create new project</button>
             </form>
             
@@ -38,11 +38,9 @@
     $('#submit').click(function(){
         
         var fileForm = new FormData();
-
         $.each(filteredFiles, function(key,value){
             fileForm.append(key,value);
         });
-        
 		 $.ajax({
 			 url: '/projects/add',
 			 method: "POST",
@@ -55,9 +53,7 @@
                  }
                  },
 			 success: function (response) {
-                 console.dir(response);
                  var project_id = JSON.parse(response).id;
-                 console.log(project_id);
                 $.ajax({
                     url: '/projects/attachimages?project_id=' + project_id,
                     method: "POST",
@@ -66,11 +62,13 @@
                     cache: false,
                     data: fileForm,
                     success: function(response){
+                        console.dir(response);
                         $.ajax({
                             url: '/projects/setdefault',
                             method: "POST",
                             data: {
-                                // selection: $('thumbnail.selected').length > 0 ? $('thumbnail.selected').children()[0].attr('src')  : null
+                                selection: $('.thumbnail.selected').length > 0 ? $($('.thumbnail.selected').children()[0]).attr('img-name')  : null,
+                                projectId: project_id
                             },
                             success: function(response){
 
@@ -94,34 +92,37 @@
         }
         else{
             var filesAmount = $files.length;
+            var defaultset = false;
             $("div.preview").empty();
             for (i = 0; i < filesAmount; i++) {
-                console.dir($files[i]);
                 var reader = new FileReader();
                 var filesize = (($files[i].size/1024)/1024).toFixed(4); // MB
                 //Skip adding file to the one we will use for the rest of the event
-                console.log(filesize);
-                if(filesize > 4)
+                if(filesize >= 4)
                 {
                     continue;
                 }
                 else{
                     reader.onload = function(event) {
-                        var $a = $("<a class = 'thumbnail upload-image'>");
-                        $($.parseHTML('<img>')).attr('src', event.target.result).appendTo($a);
+                        let name = this.fileName;
+                        var $a = $("<a>").addClass('thumbnail upload-image');
+                        if(defaultset === false)
+                        {
+                            $a.addClass('selected');
+                            defaultset = true;
+                        }
+                        $($.parseHTML("<img img-name = '"+name+"'>")).attr('src', event.target.result).appendTo($a);
                         $a.appendTo("div.preview");
                     }
                     filteredFiles[i] = $files[i];
+                    reader.fileName = $files[i].name;
                     reader.readAsDataURL($files[i]);
                 }
             }
-            // filteredFiles = event.target.files
-            console.dir(filteredFiles);
         }
     });
     $('div.preview').on('click', 'a',  function(e){
         $(this).addClass('selected').siblings().removeClass('selected');
-        console.dir(this);
     });
     CKEDITOR.replace('editor1');
 </script>
